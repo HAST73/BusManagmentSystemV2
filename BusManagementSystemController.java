@@ -13,8 +13,6 @@ import java.time.format.DateTimeParseException;
 public class BusManagementSystemController implements IControllerView {
 
 	private TicketDAO ticketDAO;
-	private IModelController model;
-	private IViewController view;
 	private IPaymentStrategy paymentStrategy;
 	private ArrayList<PassengerProfile> passengerProfile;
 	private ArrayList<DispatcherProfile> dispatcherProfiles;
@@ -26,6 +24,9 @@ public class BusManagementSystemController implements IControllerView {
 	private BusManagementSystemView busManagementSystemView = new BusManagementSystemView();
 	Ticket ticket;
 	int choiceRoute;
+	BlikPayment blikPayment;
+	CardPayment cardPayment;
+	Payment payment;
 
 	/**
 	 *
@@ -44,9 +45,14 @@ public class BusManagementSystemController implements IControllerView {
 	}
 
 	public BusManagementSystemController() {
+
+
+		blikPayment = new BlikPayment();
+		cardPayment = new CardPayment();
+		payment = new Payment();
 		Date date = new Date();
 		date.setCurrentDateTime();
-		//boolean check = false;
+		boolean check = false;
 
 		ticket = new Ticket(0,0f,null,null,date, null, 0);
 
@@ -56,41 +62,69 @@ public class BusManagementSystemController implements IControllerView {
 		int choice;
 		scanner = new Scanner(System.in);
 
-		while(ticket.getConcreteRoute() == null || ticket.getTicketType() == null || ticket.getConcreteDate() == null || ticket.getQuantity() == 0){
-			busManagementSystemView.displayMenuOptions();
+		while(!check) {
+			while (ticket.getConcreteRoute() == null || ticket.getTicketType() == null || ticket.getQuantity() == 0) {
+				busManagementSystemView.displayMenuOptions();
+
+				choice = scanner.nextInt();
+				switch (choice) {
+					case 1:
+						TicketType ticketType = getTicketChoice(ticket);
+						break;
+					case 2:
+						route = getRouteChoice(ticket);
+						break;
+					case 3:
+						date = getDateChoice(ticket);
+						break;
+					case 4:
+						int quantity = getQuantity(ticket);
+						break;
+					case 5:
+						busManagementSystemView.displaySelectedTicket(ticket.getTicketType(), ticket.getConcreteRoute(), ticket.getConcreteDate(), ticket.getQuantity());
+						break;
+					default:
+						System.out.println("Podano nieprawidlowa wartosc");
+				}
+
+			}
+			check = true;
+			//check = confirmAction(ticket.getConcreteDate().getDate());
+		}
+
+		//ustaw cene do zaplaty za bilety
+		ticket.setPrice(calculatePrice(ticket));
+		System.out.println("Cena biletu: " + ticket.getPrice() + " zl");
+
+		boolean pay = false;
+
+		//platnosci
+		while (!pay) {
+			busManagementSystemView.displayPaymentMethods();
 
 			choice = scanner.nextInt();
-			switch (choice){
+			switch (choice) {
 				case 1:
-					TicketType ticketType = getTicketChoice(ticket);
+					busManagementSystemView.displaySelectedTicket(ticket.getTicketType(), ticket.getConcreteRoute(), ticket.getConcreteDate(), ticket.getQuantity());
 					break;
 				case 2:
-					route = getRouteChoice(ticket);
+					getCardNumber();
+					payment.setCardPayment(cardPayment);
+					pay = true;
 					break;
 				case 3:
-					date = getDateChoice(ticket);
-					break;
-				case 4:
-					int quantity = getQuantity(ticket);
-					break;
-				case 5:
-					busManagementSystemView.displaySelectedTicket(ticket.getTicketType(), ticket.getConcreteRoute(), ticket.getConcreteDate(), ticket.getQuantity());
+					blikPayment.setBlikNumber(getBlikCode());
+					payment.setBlikPayment(blikPayment);
+					pay = true;
 					break;
 				default:
 					System.out.println("Podano nieprawidlowa wartosc");
 			}
-
 		}
 
-		boolean check = confirmAction(ticket.getConcreteDate().getDate());
-
-		//ustaw cene do zaplaty za bilety
-
-
-
-		//platnosci
-
 		//realizacja platnosci
+
+
 
 		boolean continueProgram = true;
 		while (continueProgram) {
@@ -157,61 +191,61 @@ public class BusManagementSystemController implements IControllerView {
 				case 1:
 					route.setStartPoint("Pasaz Grunwaldzki");
 					route.setEndPoint("ZOO");
-					route.setLenght(200);
+					route.setLenght(1200);
 					k = 0;
 					break;
 				case 2:
 					route.setStartPoint("Pasaz Grunwaldzki");
 					route.setEndPoint("Olimpia Port");
-					route.setLenght(280);
+					route.setLenght(1380);
 					k = 0;
 					break;
 				case 3:
 					route.setStartPoint("Pasaz Grunwaldzki");
 					route.setEndPoint("Tarczynski Arena");
-					route.setLenght(200);
+					route.setLenght(5000);
 					k = 0;
 					break;
 				case 4:
 					route.setStartPoint("Pasaz Grunwaldzki");
 					route.setEndPoint("Grabiszynska");
-					route.setLenght(200);
+					route.setLenght(2800);
 					k = 0;
 					break;
 				case 5:
 					route.setStartPoint("Pasaz Grunwaldzki");
 					route.setEndPoint("Kosciuszki");
-					route.setLenght(200);
+					route.setLenght(1900);
 					k = 0;
 					break;
 				case 6:
 					route.setStartPoint("ZOO");
 					route.setEndPoint("Pasaz Grunwaldzki");
-					route.setLenght(200);
+					route.setLenght(1200);
 					k = 0;
 					break;
 				case 7:
 					route.setStartPoint("Oplimpia Port");
 					route.setEndPoint("Pasaz Grunwaldzki");
-					route.setLenght(200);
+					route.setLenght(1380);
 					k = 0;
 					break;
 				case 8:
 					route.setStartPoint("Tarczynski Arena");
 					route.setEndPoint("Pasaz Grunwaldzki");
-					route.setLenght(200);
+					route.setLenght(5000);
 					k = 0;
 					break;
 				case 9:
 					route.setStartPoint("Grabiszynska");
 					route.setEndPoint("Pasaz Grunwaldzki");
-					route.setLenght(200);
+					route.setLenght(2800);
 					k = 0;
 					break;
 				case 10:
 					route.setStartPoint("Kosciuszki");
 					route.setEndPoint("Pasaz Grunwaldzki");
-					route.setLenght(200);
+					route.setLenght(1900);
 					k = 0;
 					break;
 				case 11:
@@ -326,12 +360,63 @@ public class BusManagementSystemController implements IControllerView {
 
 	@Override
 	public String getBlikCode(){
-		throw new UnsupportedOperationException();
+		scanner = new Scanner(System.in);
+		busManagementSystemView.displayBlikMessage();
+		String blikCode;
+		while (true) {
+			System.out.print("Wpisz kod BLIK w formacie XXX XXX: ");
+			blikCode = scanner.nextLine();
+
+			// Sprawdź, czy format jest poprawny
+			if (blikCode.matches("\\d{3} \\d{3}")) {
+				break; // Poprawny format, wychodzimy z pętli
+			} else {
+				System.out.println("Niepoprawny format! Kod BLIK powinien mieć format XXX XXX.");
+			}
+		}
+		return blikCode;
 	}
 
 	@Override
-	public String getCardNumber(){
-		throw new UnsupportedOperationException();
+	public void getCardNumber(){
+		scanner = new Scanner(System.in);
+		String cardNumber;
+		String cvv;
+		String expiryDate;
+		busManagementSystemView.displayCardMessage();
+
+		while (true) {
+			System.out.print("Podaj numer karty (16 cyfr): ");
+			cardNumber = scanner.nextLine();
+			if (cardNumber.matches("\\d{16}")) {
+				cardPayment.setCardNumber(cardNumber);
+				break;
+			} else {
+				System.out.println("Numer karty powinien zawierać dokładnie 16 cyfr!");
+			}
+		}
+
+		while (true) {
+			System.out.print("Podaj numer CVV (3 cyfry): ");
+			cvv = scanner.nextLine();
+			if (cvv.matches("\\d{3}")) {
+				cardPayment.setCvv(cvv);
+				break;
+			} else {
+				System.out.println("Numer CVV powinien zawierać dokładnie 3 cyfry!");
+			}
+		}
+
+		while (true) {
+			System.out.print("Podaj datę ważności karty (MM/YY): ");
+			expiryDate = scanner.nextLine();
+			if (expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+				cardPayment.setExpiryDate(expiryDate);
+				break;
+			} else {
+				System.out.println("Niepoprawny format daty! Wprowadź w formacie MM/YY (np. 12/25).");
+			}
+		}
 	}
 
 	@Override
@@ -398,7 +483,7 @@ public class BusManagementSystemController implements IControllerView {
 
 
 	public float calculatePrice(Ticket ticket) {
-		float totalCost = ticket.getConcreteRoute().getRouteLength() * 4.50f;
+		float totalCost = ticket.getConcreteRoute().getRouteLength()/1000f * 12f;
 		if(ticket.getTicketType() == TicketType.DISCOUNTED){
 			totalCost = totalCost * 0.5f;
 		}

@@ -39,13 +39,7 @@ public class Payment {
 		this.cardPayment = cardPayment;
 	}
 
-	/**
-	 * 
-	 * @param paymentID
-	 */
-	public Payment(int paymentID) {
-		// TODO - implement Payment.Payment
-		throw new UnsupportedOperationException();
+	public Payment() {
 	}
 
 }

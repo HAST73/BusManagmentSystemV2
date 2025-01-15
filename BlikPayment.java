@@ -14,13 +14,8 @@ public class BlikPayment {
 		this.blikNumber = blikNumber;
 	}
 
-	/**
-	 * 
-	 * @param blikNumber
-	 */
-	public BlikPayment(String blikNumber) {
-		// TODO - implement BlikPayment.BlikPayment
-		throw new UnsupportedOperationException();
+
+	public BlikPayment() {
 	}
 
 }

@@ -58,11 +58,8 @@ public class BusManagementSystemView implements IViewController {
 	public void displayPaymentMethods() {
 		System.out.println("=================== KASA ===================");
 		System.out.println("1.Wyświetl swój bilet");
-		System.out.println("2.Wybierz metodę");
-		System.out.println("3.Wybierz date odjazdu");
-		System.out.println("4.Wybierz ilosc biletow ktore chcesz kupic");
-		System.out.println("5.Wyswietl swoj bilet");
-		System.out.println("Aby przejsc do kupna biletu uzupelnij wszystkie dane potrzebne do stworzenia twojego biletu");
+		System.out.println("2.Wybierz platnosc Karta");
+		System.out.println("3.Wybierz platnosc BLIK");
 	}
 
 	@Override
@@ -72,12 +69,14 @@ public class BusManagementSystemView implements IViewController {
 
 	@Override
 	public void displayBlikMessage(){
-		throw new UnsupportedOperationException();
+		System.out.println("=================== BLIK ===================");
+		System.out.println("Podaj numer BLIK do zrealizowania platnosci:");
 	}
 
 	@Override
 	public void displayCardMessage(){
-		throw new UnsupportedOperationException();
+		System.out.println("=================== Karta ===================");
+		System.out.println("Podaj numer karty do zrealizowania platnosci:");
 	}
 
 	@Override

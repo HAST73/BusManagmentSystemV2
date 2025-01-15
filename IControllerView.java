@@ -27,7 +27,7 @@ public interface IControllerView {
 
 	String getBlikCode();
 
-	String getCardNumber();
+	void getCardNumber();
 
 	String getCVV();
 
