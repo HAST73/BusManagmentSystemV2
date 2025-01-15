@@ -110,11 +110,13 @@ public class BusManagementSystemController implements IControllerView {
 				case 2:
 					getCardNumber();
 					payment.setCardPayment(cardPayment);
+					System.out.println();
 					pay = true;
 					break;
 				case 3:
 					blikPayment.setBlikNumber(getBlikCode());
 					payment.setBlikPayment(blikPayment);
+					System.out.println();
 					pay = true;
 					break;
 				default:
@@ -360,18 +362,16 @@ public class BusManagementSystemController implements IControllerView {
 
 	@Override
 	public String getBlikCode(){
+		paymentStrategy = new SBlikPayment();
+
 		scanner = new Scanner(System.in);
-		busManagementSystemView.displayBlikMessage();
 		String blikCode;
+		busManagementSystemView.displayBlikMessage();
 		while (true) {
 			System.out.print("Wpisz kod BLIK w formacie XXX XXX: ");
 			blikCode = scanner.nextLine();
-
-			// Sprawdź, czy format jest poprawny
-			if (blikCode.matches("\\d{3} \\d{3}")) {
-				break; // Poprawny format, wychodzimy z pętli
-			} else {
-				System.out.println("Niepoprawny format! Kod BLIK powinien mieć format XXX XXX.");
+			if(paymentStrategy.isValidBlikCode(blikCode)){
+				break;
 			}
 		}
 		return blikCode;
@@ -379,6 +379,8 @@ public class BusManagementSystemController implements IControllerView {
 
 	@Override
 	public void getCardNumber(){
+		paymentStrategy = new SCardPayment();
+
 		scanner = new Scanner(System.in);
 		String cardNumber;
 		String cvv;
@@ -388,34 +390,28 @@ public class BusManagementSystemController implements IControllerView {
 		while (true) {
 			System.out.print("Podaj numer karty (16 cyfr): ");
 			cardNumber = scanner.nextLine();
-			if (cardNumber.matches("\\d{16}")) {
-				cardPayment.setCardNumber(cardNumber);
+			if(paymentStrategy.isValidCardNumber(cardNumber)){
 				break;
-			} else {
-				System.out.println("Numer karty powinien zawierać dokładnie 16 cyfr!");
 			}
+			cardPayment.setCardNumber(cardNumber);
 		}
 
-		while (true) {
+		while (true){
 			System.out.print("Podaj numer CVV (3 cyfry): ");
 			cvv = scanner.nextLine();
-			if (cvv.matches("\\d{3}")) {
-				cardPayment.setCvv(cvv);
+			if(paymentStrategy.isValidCVV(cvv)){
 				break;
-			} else {
-				System.out.println("Numer CVV powinien zawierać dokładnie 3 cyfry!");
 			}
+			cardPayment.setCvv(cvv);
 		}
 
 		while (true) {
 			System.out.print("Podaj datę ważności karty (MM/YY): ");
 			expiryDate = scanner.nextLine();
-			if (expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
-				cardPayment.setExpiryDate(expiryDate);
+			if(paymentStrategy.isValidExpiryDate(expiryDate)){
 				break;
-			} else {
-				System.out.println("Niepoprawny format daty! Wprowadź w formacie MM/YY (np. 12/25).");
 			}
+			cardPayment.setExpiryDate(expiryDate);
 		}
 	}
 

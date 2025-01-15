@@ -1,9 +1,15 @@
-public abstract class SBlikPayment implements IPaymentStrategy {
+public class SBlikPayment implements IPaymentStrategy {
+
+	@Override
+	public boolean processPayment() {
+		return false;
+	}
 
 	/**
 	 * 
 	 * @param priceTicket
 	 */
+	@Override
 	public boolean processPayment(Ticket priceTicket) {
 		// TODO - implement SBlikPayment.processPayment
 		throw new UnsupportedOperationException();
@@ -13,18 +19,39 @@ public abstract class SBlikPayment implements IPaymentStrategy {
 	 * 
 	 * @param blikCode
 	 */
+	@Override
 	public boolean isValidBlikCode(String blikCode) {
-		// TODO - implement SBlikPayment.isValidBlikCode
-		throw new UnsupportedOperationException();
+		// Sprawdź, czy format jest poprawny
+		if (blikCode.matches("\\d{3} \\d{3}")) {
+			System.out.println("Kod BLIK jest poprawny");
+			return true;
+		} else {
+			System.out.println("Niepoprawny format! Kod BLIK powinien mieć format XXX XXX.");
+			return false;
+		}
 	}
 
-	/**
-	 * 
-	 * @param blikCode
-	 */
-	public SBlikPayment(String blikCode) {
-		// TODO - implement SBlikPayment.SBlikPayment
-		throw new UnsupportedOperationException();
+	@Override
+	public boolean isValidCardDetails() {
+		return false;
+	}
+
+	@Override
+	public boolean isValidCardNumber(String cardNumber) {
+		return false;
+	}
+
+	@Override
+	public boolean isValidCVV(String cvv) {
+		return false;
+	}
+
+	@Override
+	public boolean isValidExpiryDate(String expiryDate) {
+		return false;
+	}
+
+	public SBlikPayment() {
 	}
 
 }

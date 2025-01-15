@@ -16,10 +16,10 @@ public interface IPaymentStrategy {
 
 	boolean isValidCardDetails();
 
-	boolean isValidCardNumber();
+	boolean isValidCardNumber(String cardNumber);
 
-	boolean isValidCVV();
+	boolean isValidCVV(String cvv);
 
-	boolean isValidExpiryDate();
+	boolean isValidExpiryDate(String expiryDate);
 
 }
