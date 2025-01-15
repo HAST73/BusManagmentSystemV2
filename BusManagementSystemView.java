@@ -66,6 +66,11 @@ public class BusManagementSystemView implements IViewController {
 	}
 
 	@Override
+	public void displaySuccess(String s) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void displayBlikMessage(){
 		throw new UnsupportedOperationException();
 	}
@@ -107,10 +112,6 @@ public class BusManagementSystemView implements IViewController {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public void displaySuccess(String s) {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public void displayAvailableTicketsWithDiscounts(TicketType ticketType) {

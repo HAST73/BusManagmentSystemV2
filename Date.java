@@ -1,5 +1,6 @@
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Date {
 
@@ -38,16 +39,10 @@ public class Date {
 	}
 
 	public void setCurrentDateTime() {
-		// Pobierz aktualną datę i godzinę
-		LocalDateTime now = LocalDateTime.now();
-
-		// Ustaw formatery
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-		// Przypisz sformatowaną datę i godzinę do pól
-		this.date = now.format(dateFormatter);
-		this.time = now.format(timeFormatter);
+		LocalDate inputDate = LocalDate.now();
+		LocalTime inputTime = LocalTime.now();
+		this.setDate(String.valueOf(inputDate));
+		this.setTime(String.valueOf(inputTime));
 	}
 
 }

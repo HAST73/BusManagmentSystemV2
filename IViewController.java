@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-
 public interface IViewController {
-
 	void displayMenuOptions();
 
 	void displayTicketType();
@@ -10,80 +7,37 @@ public interface IViewController {
 
 	void displayQuantity();
 
-	void displaySelectedTicket(TicketType ticketType, Route route, Date date, int quantity);
+	void displaySelectedTicket(TicketType var1, Route var2, Date var3, int var4);
 
 	void displayBlikMessage();
 
 	void displayCardMessage();
 
-	/**
-	 *
-	 * @param paymentType
-	 */
-	void displayPaymentSuccess(String paymentType);
+	void displayPaymentSuccess(String var1);
 
 	void displayAddImpedimentOption();
 
 	void displayCompareDelaysOption();
 
-	/**
-	 *
-	 * @param delayStatus
-	 */
-	void displaySendNotificationToPassengers(String delayStatus);
+	void displaySendNotificationToPassengers(String var1);
 
-	/**
-	 *
-	 * @param updateType
-	 * @param data
-	 */
-	void updateView(String updateType, Object data);
+	void updateView(String var1, Object var2);
 
 	void displayPaymentMethods();
 
-	/**
-	 *
-	 * @param email
-	 * @param password
-	 */
-	void displayLogin(String email, String password);
+	void displayLogin(String var1, String var2);
 
-	/**
-	 *
-	 * @param route
-	 */
-	void displayTicketsForRoute(String route);
+	void displayTicketsForRoute(String var1);
 
-	/**
-	 *
-	 * @param date
-	 */
-	void displayTicketsForDate(String date);
+	void displayTicketsForDate(String var1);
 
-	/**
-	 *
-	 * @param quantity
-	 */
-	void displayTicketPurchaseQuantity(int quantity);
+	void displayTicketPurchaseQuantity(int var1);
 
-	/**
-	 *
-	 * @param ticketType
-	 */
-	void displayAvailableTicketsWithDiscounts(TicketType ticketType);
+	void displayAvailableTicketsWithDiscounts(TicketType var1);
 
 	void displayRoleChoice();
 
-	/**
-	 *
-	 * @param s
-	 */
-	void displayError(String s);
+	void displayError(String var1);
 
-	/**
-	 *
-	 * @param s
-	 */
-	void displaySuccess(String s);
-
+	void displaySuccess(String var1);
 }

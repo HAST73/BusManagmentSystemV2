@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 import java.util.Scanner;
 import java.time.LocalDateTime;
@@ -24,9 +25,10 @@ public class BusManagementSystemController implements IControllerView {
 	public BusManagementSystemModel busManagementSystemModel = new BusManagementSystemModel();
 	private BusManagementSystemView busManagementSystemView = new BusManagementSystemView();
 	Ticket ticket;
+	int choiceRoute;
 
 	/**
-	 * 
+	 *
 	 * @param tDAO
 	 * @param model
 	 * @param view
@@ -44,6 +46,7 @@ public class BusManagementSystemController implements IControllerView {
 	public BusManagementSystemController() {
 		Date date = new Date();
 		date.setCurrentDateTime();
+		//boolean check = false;
 
 		ticket = new Ticket(0,0f,null,null,date, null, 0);
 
@@ -76,11 +79,14 @@ public class BusManagementSystemController implements IControllerView {
 				default:
 					System.out.println("Podano nieprawidlowa wartosc");
 			}
+
 		}
 
-		//ile biletow jest na kupno
+		boolean check = confirmAction(ticket.getConcreteDate().getDate());
 
 		//ustaw cene do zaplaty za bilety
+
+
 
 		//platnosci
 
@@ -146,7 +152,7 @@ public class BusManagementSystemController implements IControllerView {
 
 		while(k!=0){
 			busManagementSystemView.displayRoute();
-			int choiceRoute = scanner.nextInt();
+			choiceRoute = scanner.nextInt();
 			switch (choiceRoute){
 				case 1:
 					route.setStartPoint("Pasaz Grunwaldzki");
@@ -236,12 +242,12 @@ public class BusManagementSystemController implements IControllerView {
 				System.out.println("Wprowadź datę w formacie dd.MM.yyyy:");
 				String dateInput = scanner.nextLine();
 				inputDate = LocalDate.parse(dateInput, dateFormatter);
-				date.setDate(String.valueOf(inputDate));
+				ticket.getConcreteDate().setDate(String.valueOf(inputDate));
 
 				System.out.println("Wprowadź godzinę w formacie HH:mm:");
 				String timeInput = scanner.nextLine();
 				inputTime = LocalTime.parse(timeInput, timeFormatter);
-				date.setTime(String.valueOf(inputTime));
+				ticket.getConcreteDate().setTime(String.valueOf(inputTime));
 
 				LocalDateTime inputDateTime = LocalDateTime.of(inputDate, inputTime);
 
@@ -349,8 +355,35 @@ public class BusManagementSystemController implements IControllerView {
 	}
 
 	@Override
-	public boolean confirmAction(String prompt){
-		throw new UnsupportedOperationException();
+	public boolean confirmAction(String data){
+		//ile biletow jest na kupno
+		List<Integer> numbers;
+		int num;
+		ticketDAO = new TicketDAO();
+		choiceRoute-=1;
+
+		try {
+			numbers = ticketDAO.checkDateInSystem(data);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		if(numbers == null){
+			numbers  = Arrays.asList(30, 30, 30, 30, 30, 30, 30, 30, 30, 30);
+		}
+		num = numbers.get(choiceRoute);
+
+		if(num - ticket.getQuantity() >= 0){
+			numbers.set(choiceRoute,numbers.get(choiceRoute) - ticket.getQuantity());
+			ticketDAO.addTicketToSystem(data,numbers);
+			System.out.println("Udana rezerwacja, przejdź do platnosci");
+			return true;
+		}
+		else{
+			ticketDAO.addTicketToSystem(data,numbers);
+			System.out.println("Nie udana rezerwacja, brak wolnych miejsc. Wybierz inna trase, lub termin");
+			return false;
+		}
 	}
 
 	@Override

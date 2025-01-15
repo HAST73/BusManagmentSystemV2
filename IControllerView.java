@@ -1,12 +1,11 @@
 public interface IControllerView {
+	TicketType getTicketChoice(Ticket var1);
 
-	TicketType getTicketChoice(Ticket ticket);
+	Route getRouteChoice(Ticket var1);
 
-	Route getRouteChoice(Ticket ticket);
+	Date getDateChoice(Ticket var1);
 
-	Date getDateChoice(Ticket ticket);
-
-	int getQuantity(Ticket ticket);
+	int getQuantity(Ticket var1);
 
 	Payment getPaymentMethod();
 
@@ -38,14 +37,9 @@ public interface IControllerView {
 
 	Impediment getImpedimentDetails();
 
-	/**
-	 * 
-	 * @param prompt
-	 */
-	boolean confirmAction(String prompt);
+	boolean confirmAction(String var1);
 
 	void resetView();
 
 	void initializeView();
-
 }
