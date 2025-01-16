@@ -23,6 +23,8 @@ public class BusManagementSystemController implements IControllerView {
 	Impediment impediment;
 	Date dateDelay;
 
+	private boolean paymentCompleted = false;
+
 	public BusManagementSystemModel busManagementSystemModel = new BusManagementSystemModel();
 	private BusManagementSystemView busManagementSystemView = new BusManagementSystemView();
 	Ticket ticket;
@@ -33,22 +35,6 @@ public class BusManagementSystemController implements IControllerView {
 	Date date;
 	int choice;
 	String role = "";
-
-	/**
-	 *
-	 * @param tDAO
-	 * @param model
-	 * @param view
-	 * @param pS
-	 * @param psP
-	 * @param dsP
-	 * @param bDP
-	 * @param rIR
-	 */
-
-	public BusManagementSystemController(TicketDAO tDAO, IModelController model, IViewController view, IPaymentStrategy pS, PassengerProfile psP, DispatcherProfile dsP, BusDriverProfile bDP, RouteImpedimentResolver rIR) {
-
-	}
 
 	public BusManagementSystemController() {
 		int choiseBD;
@@ -61,70 +47,63 @@ public class BusManagementSystemController implements IControllerView {
 			switch (choiseBD) {
 				case 1:
 					purchaseTicket();
-					calculatePrice();
-					processPayment();
+//					calculatePrice();
+//					processPayment();
 					break;
 				case 2:
 					getDelayNotificationDetails();
 					break;
 				default:
-					System.out.println("Podano nieprawidlowa wartosc");
+					busManagementSystemView.displayMessage();
 					break;
 			}
 		}
 	}
 
 
-	public void reportRouteImpediment(){
+	public void reportRouteImpediment() {
 		impediment = new Impediment();
 		dateDelay = new Date();
-		boolean check = false;
-		scanner = new Scanner(System.in);
-		while (!check) {
+
+		while (true) {
 			busManagementSystemView.displayRoleChoice();
-			choice = scanner.nextInt();
-			switch (choice) {
-				case 1:
-					role = "Pasazer";
-					check = true;
-					break;
-				case 2:
-					role = "Kierowca";
-					busDriverProfile = new BusDriverProfile();
-					check = true;
-					break;
-				case 3:
-					role = "Dyspozytor";
-					check = true;
-					break;
-				default:
-					System.out.println("Podano nieprawidlowa wartosc");
-					break;
-			}
-		}
-
-		boolean checkBusDriver = false;
-		if(role == "Kierowca"){
-			while (!checkBusDriver) {
-				System.out.println("Czy chcesz zasygnalizowac utrudnienie?");
-				System.out.println("1.Tak");
-				System.out.println("2.Nie");
-				choice = scanner.nextInt();
-				switch (choice) {
-					case 1:
+			int roleChoice = choiceImpediment();
+			if (roleChoice == 1) {
+				handleRole("Pasazer");
+				break;
+			} else if (roleChoice == 2) {
+				handleRole("Kierowca");
+				while (true) {
+					busManagementSystemView.displayQuestionImpediment();
+					int choice = scanner.nextInt();
+					if (choice == 1) {
 						getImpedimentDetails();
-						busDriverProfile.addImpediment(impediment);
+						new BusDriverProfile().addImpediment(impediment);
+					} else if (choice == 2) {
 						break;
-					case 2:
-						checkBusDriver = true;
-						break;
-					default:
-						System.out.println("Podano nieprawidlowa wartosc");
-						break;
+					} else {
+						busManagementSystemView.displayMessage();
+					}
 				}
+				break;
+			} else if (roleChoice == 3) {
+				handleRole("Dyspozytor");
+				break;
+			} else {
+				busManagementSystemView.displayMessage();
 			}
 		}
+	}
 
+	private void handleRole(String role) {
+		// Placeholder to manage roles if needed for future extensions
+		System.out.println("Role: " + role);
+	}
+
+	public int choiceImpediment() {
+		Scanner scanner = new Scanner(System.in);
+		int inputChoice = scanner.nextInt();
+		return inputChoice;
 	}
 
 	public void setCurrentDateTime() {
@@ -140,6 +119,26 @@ public class BusManagementSystemController implements IControllerView {
 				&& ticket.getQuantity() > 0;
 	}
 
+	public int choice() {
+		Scanner scanner = new Scanner(System.in);
+		int input = scanner.nextInt();
+		return input;
+	}
+
+	public int choicePayment() {
+		Scanner scanner = new Scanner(System.in);
+		int choiceP = scanner.nextInt();
+		return choiceP;
+	}
+
+	public boolean isPaymentCompleted() {
+		return paymentCompleted;
+	}
+
+	public void markPaymentAsCompleted() {
+		paymentCompleted = true;
+	}
+
 	public void purchaseTicket(){
 		date = new Date();
 		blikPayment = new BlikPayment();
@@ -152,14 +151,11 @@ public class BusManagementSystemController implements IControllerView {
 		Route route = new Route("brak miejsca odjazdu", "brak miejsca przyjazdu",0);
 		ticket.setConcreteRoute(route);
 
-		scanner = new Scanner(System.in);
-
 		while(!check()) {
 			while (ticket.getConcreteRoute() == null || ticket.getTicketType() == null || ticket.getQuantity() == 0) {
 				busManagementSystemView.displayMenuOptions();
 
-				choice = scanner.nextInt();
-				switch (choice) {
+				switch (choice()) {
 					case 1:
 						TicketType ticketType = getTicketChoice(ticket);
 						break;
@@ -176,11 +172,15 @@ public class BusManagementSystemController implements IControllerView {
 						busManagementSystemView.displaySelectedTicket(ticket.getTicketType(), ticket.getConcreteRoute(), ticket.getConcreteDate(), ticket.getQuantity());
 						break;
 					default:
-						System.out.println("Podano nieprawidlowa wartosc");
+						busManagementSystemView.displayMessage();
+						break;
 				}
 
 			}
-			//check = confirmAction(ticket.getConcreteDate().getDate());
+			if (confirmAction(ticket.getConcreteDate().getDate())) {
+				calculatePrice();
+				processPayment();
+			}
 		}
 	}
 
@@ -191,35 +191,31 @@ public class BusManagementSystemController implements IControllerView {
 	}
 
 	public void processPayment(){
-		boolean pay = false;
+//		boolean pay = false;
 		//platnosci
-		while (!pay) {
+		while (!isPaymentCompleted()) {
 			busManagementSystemView.displayPaymentMethods();
 
-			choice = scanner.nextInt();
-			switch (choice) {
+			switch (choicePayment()) {
 				case 1:
 					busManagementSystemView.displaySelectedTicket(ticket.getTicketType(), ticket.getConcreteRoute(), ticket.getConcreteDate(), ticket.getQuantity());
 					break;
 				case 2:
 					getCardNumber();
 					payment.setCardPayment(cardPayment);
-					System.out.println();
-					pay = true;
+					markPaymentAsCompleted();
 					break;
 				case 3:
 					blikPayment.setBlikNumber(getBlikCode());
 					payment.setBlikPayment(blikPayment);
-					System.out.println();
-					pay = true;
+					markPaymentAsCompleted();
 					break;
 				default:
-					System.out.println("Podano nieprawidlowa wartosc");
+					busManagementSystemView.displayMessage();
+					break;
 			}
 		}
-		System.out.println();
-		System.out.println("Transakcja przebiegla pomyslnie. Dziekujemy za korzystanie z naszych linii autobusowych");
-		System.out.println();
+		busManagementSystemView.displaySuccess();
 	}
 
 	@Override
@@ -242,7 +238,8 @@ public class BusManagementSystemController implements IControllerView {
 					k = 0;
 					break;
 				default:
-					System.out.println("Podano nieprawidlowa wartosc");
+					busManagementSystemView.displayMessage();
+					break;
 			}
 
 		}
@@ -322,7 +319,8 @@ public class BusManagementSystemController implements IControllerView {
 					k = 0;
 					break;
 				default:
-					System.out.println("Podano nieprawidlowa wartosc");
+					busManagementSystemView.displayMessage();
+					break;
 			}
 			ticket.setConcreteRoute(route);
 		}
@@ -460,58 +458,81 @@ public class BusManagementSystemController implements IControllerView {
 		}
 	}
 
-	@Override
-	public String getBlikCode(){
-		paymentStrategy = new SBlikPayment();
+	public String choiceblikCode() {
+		Scanner scanner = new Scanner(System.in);
+		String inputBlikCode = scanner.nextLine();
+		return inputBlikCode;
+	}
 
-		scanner = new Scanner(System.in);
-		String blikCode;
+	@Override
+	public String getBlikCode() {
+		paymentStrategy = new SBlikPayment();
 		busManagementSystemView.displayBlikMessage();
 		while (true) {
-			System.out.print("Wpisz kod BLIK w formacie XXX XXX: ");
-			blikCode = scanner.nextLine();
-			if(paymentStrategy.isValidBlikCode(blikCode)){
-				break;
+			busManagementSystemView.displayCodeBlikMessage();
+			String blikCode = choiceblikCode();
+			if (paymentStrategy.isValidBlikCode(blikCode)) {
+				return blikCode;
 			}
 		}
-		return blikCode;
+	}
+
+	public String choiceCardNumber() {
+		Scanner scanner = new Scanner(System.in);
+		String inputCardNumber = scanner.nextLine();
+		return inputCardNumber;
+	}
+
+	public String choiceCvv() {
+		Scanner scanner = new Scanner(System.in);
+		String inputCvv = scanner.nextLine();
+		return inputCvv;
+	}
+
+	public String choiceExpiryDate() {
+		Scanner scanner = new Scanner(System.in);
+		String inputExpiryDate = scanner.nextLine();
+		return inputExpiryDate;
 	}
 
 	@Override
 	public void getCardNumber(){
 		paymentStrategy = new SCardPayment();
 
-		scanner = new Scanner(System.in);
-		String cardNumber;
-		String cvv;
-		String expiryDate;
+//		scanner = new Scanner(System.in);
+//		String cardNumber;
+//		String cvv;
+//		String expiryDate;
 		busManagementSystemView.displayCardMessage();
 
 		while (true) {
-			System.out.print("Podaj numer karty (16 cyfr): ");
-			cardNumber = scanner.nextLine();
-			if(paymentStrategy.isValidCardNumber(cardNumber)){
+			//System.out.print("Podaj numer karty (16 cyfr): ");
+			busManagementSystemView.displayCardMessageNumber();
+			// cardNumber = scanner.nextLine();
+			if(paymentStrategy.isValidCardNumber(choiceCardNumber())){
 				break;
 			}
-			cardPayment.setCardNumber(cardNumber);
+			cardPayment.setCardNumber(choiceCardNumber());
 		}
 
 		while (true){
-			System.out.print("Podaj numer CVV (3 cyfry): ");
-			cvv = scanner.nextLine();
-			if(paymentStrategy.isValidCVV(cvv)){
+			//System.out.print("Podaj numer CVV (3 cyfry): ");
+			busManagementSystemView.displayCardMessageCvv();
+//			cvv = scanner.nextLine();
+			if(paymentStrategy.isValidCVV(choiceCvv())){
 				break;
 			}
-			cardPayment.setCvv(cvv);
+			cardPayment.setCvv(choiceCvv());
 		}
 
 		while (true) {
-			System.out.print("Podaj datę ważności karty (MM/YY): ");
-			expiryDate = scanner.nextLine();
-			if(paymentStrategy.isValidExpiryDate(expiryDate)){
+//			System.out.print("Podaj datę ważności karty (MM/YY): ");
+			busManagementSystemView.displayCardMessageExpiry();
+//			expiryDate = scanner.nextLine();
+			if(paymentStrategy.isValidExpiryDate(choiceExpiryDate())){
 				break;
 			}
-			cardPayment.setExpiryDate(expiryDate);
+			cardPayment.setExpiryDate(choiceExpiryDate());
 		}
 	}
 

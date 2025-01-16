@@ -13,6 +13,13 @@ public interface IViewController {
 
 	void displayCardMessage();
 
+	void displayCardMessageNumber();
+
+	void displayCardMessageCvv();
+
+	void displayCardMessageExpiry();
+	void displayCodeBlikMessage();
+
 	void displayPaymentSuccess(String var1);
 
 	void displayAddImpedimentOption();
@@ -39,5 +46,11 @@ public interface IViewController {
 
 	void displayError(String var1);
 
-	void displaySuccess(String var1);
+	void displaySuccess();
+
+	void displayMessage();
+
+	void displayQuestionImpediment();
+
+	void displayInformation();
 }

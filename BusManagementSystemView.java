@@ -63,8 +63,10 @@ public class BusManagementSystemView implements IViewController {
 	}
 
 	@Override
-	public void displaySuccess(String s) {
-		throw new UnsupportedOperationException();
+	public void displaySuccess() {
+		System.out.println();
+		System.out.println("Transakcja przebiegla pomyslnie. Dziekujemy za korzystanie z naszych linii autobusowych");
+		System.out.println();
 	}
 
 	@Override
@@ -77,6 +79,26 @@ public class BusManagementSystemView implements IViewController {
 	public void displayCardMessage(){
 		System.out.println("=================== Karta ===================");
 		System.out.println("Podaj numer karty do zrealizowania platnosci:");
+	}
+
+	@Override
+	public void displayCardMessageNumber(){
+		System.out.print("Podaj numer karty (16 cyfr): ");
+	}
+
+	@Override
+	public void displayCardMessageCvv(){
+		System.out.print("Podaj numer CVV (3 cyfry): ");
+	}
+
+	@Override
+	public void displayCardMessageExpiry(){
+		System.out.print("Podaj datę ważności karty (MM/YY): ");
+	}
+
+	@Override
+	public void displayCodeBlikMessage(){
+		System.out.print("Wpisz kod BLIK w formacie XXX XXX: ");
 	}
 
 	@Override
@@ -147,6 +169,23 @@ public class BusManagementSystemView implements IViewController {
 	@Override
 	public void displayTicketPurchaseQuantity(int quantity) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void displayQuestionImpediment() {
+		System.out.println("Czy chcesz zasygnalizowac utrudnienie?");
+		System.out.println("1.Tak");
+		System.out.println("2.Nie");
+	}
+
+	@Override
+	public void displayMessage() {
+		System.out.println("Podano nieprawidlowa wartosc");
+	}
+
+	@Override
+	public void displayInformation() {
+		System.out.println("Podano nieprawidlowa wartosc");
 	}
 
 
