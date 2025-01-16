@@ -23,7 +23,7 @@ public interface IControllerView {
 
 	String getImpedimentRoute();
 
-	String getDelayNotificationDetails();
+	void getDelayNotificationDetails();
 
 	String getBlikCode();
 
@@ -35,7 +35,7 @@ public interface IControllerView {
 
 	String getRole();
 
-	Impediment getImpedimentDetails();
+	void getImpedimentDetails();
 
 	boolean confirmAction(String var1);
 

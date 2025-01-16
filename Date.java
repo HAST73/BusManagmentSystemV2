@@ -38,11 +38,4 @@ public class Date {
 		this.time = time;
 	}
 
-	public void setCurrentDateTime() {
-		LocalDate inputDate = LocalDate.now();
-		LocalTime inputTime = LocalTime.now();
-		this.setDate(String.valueOf(inputDate));
-		this.setTime(String.valueOf(inputTime));
-	}
-
 }

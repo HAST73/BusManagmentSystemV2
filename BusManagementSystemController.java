@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.Scanner;
 import java.time.LocalDateTime;
@@ -19,6 +19,9 @@ public class BusManagementSystemController implements IControllerView {
 	private ArrayList<BusDriverProfile> busDriverProfiles;
 	private ArrayList<RouteImpedimentResolver> routeIssueResolver;
 	Scanner scanner;
+	BusDriverProfile busDriverProfile;
+	Impediment impediment;
+	Date dateDelay;
 
 	public BusManagementSystemModel busManagementSystemModel = new BusManagementSystemModel();
 	private BusManagementSystemView busManagementSystemView = new BusManagementSystemView();
@@ -27,6 +30,9 @@ public class BusManagementSystemController implements IControllerView {
 	BlikPayment blikPayment;
 	CardPayment cardPayment;
 	Payment payment;
+	Date date;
+	int choice;
+	String role = "";
 
 	/**
 	 *
@@ -45,24 +51,110 @@ public class BusManagementSystemController implements IControllerView {
 	}
 
 	public BusManagementSystemController() {
+		int choiseBD;
+		boolean checkBD = false;
+		scanner = new Scanner(System.in);
+		reportRouteImpediment();
+		while (!checkBD) {
+			busManagementSystemView.displaySendNotificationToPassengers();
+			choiseBD = scanner.nextInt();
+			switch (choiseBD) {
+				case 1:
+					purchaseTicket();
+					calculatePrice();
+					processPayment();
+					break;
+				case 2:
+					getDelayNotificationDetails();
+					break;
+				default:
+					System.out.println("Podano nieprawidlowa wartosc");
+					break;
+			}
+		}
+	}
 
 
+	public void reportRouteImpediment(){
+		impediment = new Impediment();
+		dateDelay = new Date();
+		boolean check = false;
+		scanner = new Scanner(System.in);
+		while (!check) {
+			busManagementSystemView.displayRoleChoice();
+			choice = scanner.nextInt();
+			switch (choice) {
+				case 1:
+					role = "Pasazer";
+					check = true;
+					break;
+				case 2:
+					role = "Kierowca";
+					busDriverProfile = new BusDriverProfile();
+					check = true;
+					break;
+				case 3:
+					role = "Dyspozytor";
+					check = true;
+					break;
+				default:
+					System.out.println("Podano nieprawidlowa wartosc");
+					break;
+			}
+		}
+
+		boolean checkBusDriver = false;
+		if(role == "Kierowca"){
+			while (!checkBusDriver) {
+				System.out.println("Czy chcesz zasygnalizowac utrudnienie?");
+				System.out.println("1.Tak");
+				System.out.println("2.Nie");
+				choice = scanner.nextInt();
+				switch (choice) {
+					case 1:
+						getImpedimentDetails();
+						busDriverProfile.addImpediment(impediment);
+						break;
+					case 2:
+						checkBusDriver = true;
+						break;
+					default:
+						System.out.println("Podano nieprawidlowa wartosc");
+						break;
+				}
+			}
+		}
+
+	}
+
+	public void setCurrentDateTime() {
+		LocalDate inputDate = LocalDate.now();
+		LocalTime inputTime = LocalTime.now();
+		date.setDate(String.valueOf(inputDate));
+		date.setTime(String.valueOf(inputTime));
+	}
+
+	public boolean check(){
+		return ticket.getConcreteRoute() != null
+				&& ticket.getTicketType() != null
+				&& ticket.getQuantity() > 0;
+	}
+
+	public void purchaseTicket(){
+		date = new Date();
 		blikPayment = new BlikPayment();
 		cardPayment = new CardPayment();
 		payment = new Payment();
-		Date date = new Date();
-		date.setCurrentDateTime();
-		boolean check = false;
+		setCurrentDateTime();
 
 		ticket = new Ticket(0,0f,null,null,date, null, 0);
 
 		Route route = new Route("brak miejsca odjazdu", "brak miejsca przyjazdu",0);
 		ticket.setConcreteRoute(route);
 
-		int choice;
 		scanner = new Scanner(System.in);
 
-		while(!check) {
+		while(!check()) {
 			while (ticket.getConcreteRoute() == null || ticket.getTicketType() == null || ticket.getQuantity() == 0) {
 				busManagementSystemView.displayMenuOptions();
 
@@ -88,16 +180,18 @@ public class BusManagementSystemController implements IControllerView {
 				}
 
 			}
-			check = true;
 			//check = confirmAction(ticket.getConcreteDate().getDate());
 		}
+	}
 
+	public void calculatePrice(){
 		//ustaw cene do zaplaty za bilety
 		ticket.setPrice(calculatePrice(ticket));
 		System.out.println("Cena biletu: " + ticket.getPrice() + " zl");
+	}
 
+	public void processPayment(){
 		boolean pay = false;
-
 		//platnosci
 		while (!pay) {
 			busManagementSystemView.displayPaymentMethods();
@@ -123,35 +217,9 @@ public class BusManagementSystemController implements IControllerView {
 					System.out.println("Podano nieprawidlowa wartosc");
 			}
 		}
-
-		//realizacja platnosci
-
-
-
-		boolean continueProgram = true;
-		while (continueProgram) {
-			System.out.println("Chcesz zobaczyc swoj bilet?");
-			System.out.println("Wpisz 1 jesli tak ");
-			System.out.println("Wpisz 2 jesli nie ");
-			int choiceToShowTicket = scanner.nextInt();
-			switch (choiceToShowTicket) {
-				case 1:
-					busManagementSystemView.displaySelectedTicket(
-							ticket.getTicketType(),
-							ticket.getConcreteRoute(),
-							ticket.getConcreteDate(),
-							ticket.getQuantity()
-					);
-					break;
-				case 2:
-					System.out.println("Koniec");
-					continueProgram = false;
-					break;
-				default:
-					System.out.println("Podano nieprawidlowa wartosc. Sprobuj ponownie.");
-					break;
-			}
-		}
+		System.out.println();
+		System.out.println("Transakcja przebiegla pomyslnie. Dziekujemy za korzystanie z naszych linii autobusowych");
+		System.out.println();
 	}
 
 	@Override
@@ -316,6 +384,21 @@ public class BusManagementSystemController implements IControllerView {
 	}
 
 	@Override
+	public void getImpedimentDetails(){
+		scanner = new Scanner(System.in);
+		// Pobieramy datę od użytkownika
+		System.out.print("Podaj datę (format: YYYY-MM-DD): ");
+		String dateD = scanner.nextLine();
+		dateDelay.setDate(dateD);
+		impediment.setDate(dateDelay);
+
+		// Pobieramy opis opóźnienia od użytkownika
+		System.out.print("Podaj opis opóźnienia: ");
+		String description = scanner.nextLine();
+		impediment.setDescription(description);
+	}
+
+	@Override
 	public Payment getPaymentMethod(){
 		throw new UnsupportedOperationException();
 	}
@@ -356,8 +439,25 @@ public class BusManagementSystemController implements IControllerView {
 	}
 
 	@Override
-	public String getDelayNotificationDetails(){
-		throw new UnsupportedOperationException();
+	public void getDelayNotificationDetails(){
+		try {
+			// Odczytujemy zawartość pliku
+			List<String> lines = new ArrayList<>();
+			BufferedReader reader = new BufferedReader(new FileReader("opoznienie.txt"));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+			reader.close();
+
+			// Wyświetlamy zawartość pliku
+			System.out.println("Utrudnienia na drodze: ");
+			for (int i = 0; i < lines.size(); i++) {
+				System.out.println((i + 1) + ". " + lines.get(i));
+			}
+		} catch (IOException e) {
+			System.out.println("Błąd podczas odczytywania pliku: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -430,10 +530,6 @@ public class BusManagementSystemController implements IControllerView {
 		return "siema";
 	}
 
-	@Override
-	public Impediment getImpedimentDetails(){
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public boolean confirmAction(String data){

@@ -5,9 +5,18 @@ public class Impediment {
 	private Route route;
 	private ImpedimentType impedimentType;
 	private Date date;
+	private int delay;
 
 	public int getImpedimentID() {
 		return this.impedimentID;
+	}
+
+	public void setDelay(int delay) {
+		this.delay = delay;
+	}
+
+	public int getDelay() {
+		return this.delay;
 	}
 
 	/**
@@ -54,16 +63,9 @@ public class Impediment {
 		this.impedimentType = impedimentType;
 	}
 
-	/**
-	 * 
-	 * @param iID
-	 * @param desc
-	 * @param route
-	 * @param iT
-	 */
-	public Impediment(int iID, String desc, Route route, ImpedimentType iT) {
-		// TODO - implement Impediment.Impediment
-		throw new UnsupportedOperationException();
+
+	public Impediment() {
+
 	}
 
 	public Date getDate() {

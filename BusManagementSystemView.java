@@ -80,6 +80,15 @@ public class BusManagementSystemView implements IViewController {
 	}
 
 	@Override
+	public void displayRoleChoice() {
+		System.out.println("================= Wybor Roli =================");
+		System.out.println("1.Pasazer");
+		System.out.println("2.Kierowca");
+		System.out.println("3.Dyspozytor");
+	}
+
+
+	@Override
 	public void displayPaymentSuccess(String paymentType){
 		throw new UnsupportedOperationException();
 	}
@@ -97,14 +106,12 @@ public class BusManagementSystemView implements IViewController {
 	}
 
 	@Override
-	public void displaySendNotificationToPassengers(String delayStatus){
-		throw new UnsupportedOperationException();
+	public void displaySendNotificationToPassengers(){
+		System.out.println("================= Menu =================");
+		System.out.println("1.Kupno biletu");
+		System.out.println("2.Pokazanie utrudnien");
 	}
 
-	@Override
-	public void displayRoleChoice() {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public void displayError(String s) {

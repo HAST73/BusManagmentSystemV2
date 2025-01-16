@@ -19,7 +19,7 @@ public interface IViewController {
 
 	void displayCompareDelaysOption();
 
-	void displaySendNotificationToPassengers(String var1);
+	void displaySendNotificationToPassengers();
 
 	void updateView(String var1, Object var2);
 
